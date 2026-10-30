@@ -57,6 +57,29 @@ RootView()
 
 文字样式用 `BUITextStyle`，按原站的 px 一比一换成 pt。默认字号下尺寸和原站一致，字号会随系统设置缩放（13pt 跟 `.footnote` 走，12pt 跟 `.caption` 走）。
 
+### 给宿主 App 的接口
+
+把组件放进一个已有的 App时用得上：
+
+```swift
+RootView()
+    .buiTheme(BUITheme(colors: myColors, radii: myRadii,
+                       typeScale: 1.2,     // 原站是桌面字号（标签 13pt），手机正文 17pt 的 App 设 1.15–1.2
+                       entrances: false))  // 列表滚动会重建行时关掉入场动画，否则打开一段历史时每行同时淡入
+```
+
+- **字形**：宿主在外层设了 `.fontDesign`（比如整个 App 用圆体）时，`buiFont` 的默认字形跟着宿主走，等宽和圆体的样式保持自己的字形。
+- **Thinking**：`ThinkingState(…, maxWidth:)` 可以撑满宽度（默认 380pt）。收起时不构建正文，出现时不起 task、不挂入场动画，适合放进懒加载列表，每条思考一行。
+- **Tool Chips 拆开用**：
+  - `ToolChipRow(call, isOpen:, isRunning:, chipStyle:, action:) { 右侧附加视图 }`：一个调用一行，给每步单独成行的列表。展开内容由宿主画。`chipStyle: .plain` 去掉参数的底框。
+  - `ToolCall.Kind.symbol("terminal")` 用 SF Symbols 作图标。
+  - `ToolChipGroup(chips, isOpen:, isRunning:)`：把一段连续的调用合成一行 chip，比如「Read 3 files · Edit Provider.swift +6 −3」。每种工具一个 chip，`BUIFlowLayout` 换行，chip 数和调用数无关。点按和展开由宿主处理。
+- **Code Block 的 diff**：`CodeBlock(filename:diff:additions:deletions:maxWidth:elevation:onTitleTap:)`。
+  - `additions` / `deletions`：只传一段节选时，标题上的计数用这两个值。
+  - `elevation: .hairline`：放在别的卡片里时去掉阴影。
+  - `onTitleTap`：让文件名可以点。
+  - 所有行都没有行号时，不画行号栏。
+
 ## Catalog
 
 ```sh
@@ -84,7 +107,7 @@ tools/build-catalog.sh   # xcodegen + xcodebuild + 安装到本项目的模拟�
 | 02 | [Thinking](compare/02-thinking-state.jpg) | `ThinkingState` | ✅ | 原版用内部计时器推进，这里改成由 `isWorking` 和已到达的行驱动；搜索结果点按打开链接 |
 | 03 | [Streaming Text](compare/03-streaming-text.jpg) | `StreamingText` | ✅ | 行内来源 chip 画在文字后面，正文是单个 `Text`（中文也能正常换行）；chip 没有单独的 pop-in 动画 |
 | 04 | [Approval Card](compare/04-approval-card.jpg) | `ApprovalCard` | ✅ | 选项的滑动悬停高亮改成按下高亮；步数用数字滚动过渡 |
-| 05 | [Tool Chips](compare/05-tool-chips.jpg) | `ToolChips` | ✅ | 悬停改为点按：点一行展开详情，点文件 chip 在其下方浮出 diff 预览 |
+| 05 | [Tool Chips](compare/05-tool-chips.jpg) | `ToolChips`、`ToolChipRow`、`ToolChipGroup` | ✅ | 悬停改为点按：点一行展开详情，点文件 chip 在其下方浮出 diff 预览；另有单行和合组两种拆开用法（见「给宿主 App 的接口」） |
 | 06 | [Task Rows](compare/06-task-rows.jpg) | `TaskRows` | ✅ | 悬停底色改为按下底色 |
 | 07 | [Chat](compare/07-chat-composer.jpg) | `ChatPanel` | ✅ | 和原版一致 |
 | 08 | [Prompt Bar](compare/08-prompt-bar.jpg) | `PromptBar`、`PromptBarModel` | ✅ | 状态放在 `@Observable` 模型里；彩虹扫光用渐变光带代替原版的 WebGL shader；方向键和 Esc 的键盘操作没做；模型菜单宽 184pt（原 176，SF 字体更宽） |
