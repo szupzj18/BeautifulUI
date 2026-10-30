@@ -57,6 +57,7 @@ public struct ThinkingState: View {
     var footnote: String?
     var collapseDelay: Double
     var minimumHeight: CGFloat
+    var maxWidth: CGFloat
     var externalExpanded: Binding<Bool>?
 
     @State private var manualExpanded: Bool?
@@ -82,7 +83,8 @@ public struct ThinkingState: View {
         footnote: String? = nil,
         isExpanded: Binding<Bool>? = nil,
         collapseDelay: Double = 2.6,
-        minimumHeight: CGFloat = 0
+        minimumHeight: CGFloat = 0,
+        maxWidth: CGFloat = 380
     ) {
         self.style = style
         self.isWorking = isWorking
@@ -94,6 +96,7 @@ public struct ThinkingState: View {
         self.externalExpanded = isExpanded
         self.collapseDelay = collapseDelay
         self.minimumHeight = minimumHeight
+        self.maxWidth = maxWidth
     }
 
     /// Whether the trace is open when nobody has toggled it.
@@ -113,19 +116,25 @@ public struct ThinkingState: View {
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             header
-            trace
-                .frame(height: expanded ? nil : 0, alignment: .top)
-                .opacity(expanded ? 1 : 0)
-                .clipped()
+            // Built only while open: folded, a long trace would still be laid out at zero height on every
+            // appearance (each thought of an opened work line in a host's chat list).
+            if expanded {
+                trace
+                    .transition(.opacity)
+            }
         }
-        .frame(maxWidth: 380, minHeight: isWorking || expanded ? minimumHeight : nil, alignment: .topLeading)
+        .frame(maxWidth: maxWidth, minHeight: isWorking || expanded ? minimumHeight : nil, alignment: .topLeading)
         .animation(BUICurve.outStrong.animation(duration: 0.4), value: expanded)
         .animation(BUICurve.outStrong.animation(duration: 0.4), value: isWorking)
-        .task(id: isWorking) {
-            guard !isWorking, !rows.isEmpty else { return }
+        // On the change only: `.task(id:)` started a task every time the trace appeared (each row scrolling into a
+        // host's lazy list), and opened finished traces for `collapseDelay` on appearing.
+        .onChange(of: isWorking) { _, working in
+            guard !working, !rows.isEmpty else { return }
             lingering = true
-            try? await Task.sleep(for: .seconds(collapseDelay))
-            lingering = false
+            Task {
+                try? await Task.sleep(for: .seconds(collapseDelay))
+                lingering = false
+            }
         }
     }
 
@@ -147,11 +156,16 @@ public struct ThinkingState: View {
                         .lineLimit(1)
                         .buiShimmer()
                 } else {
-                    Text(doneTitle)
+                    let title = Text(doneTitle)
                         .buiFont(.label)
                         .lineLimit(1)
                         .foregroundStyle(theme.colors.ink2)
-                        .buiEntrance(.fadeIn, duration: 0.35, curve: .easeOut)
+                    // Without the modifier at all when entrances are off: its state and onAppear on every row.
+                    if theme.entrances {
+                        title.buiEntrance(.fadeIn, duration: 0.35, curve: .easeOut)
+                    } else {
+                        title
+                    }
                 }
                 BUIIcon(.chevronDown, size: 14, lineWidth: 2.2)
                     .foregroundStyle(theme.colors.ink3)
