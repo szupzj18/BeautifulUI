@@ -5,6 +5,8 @@ public struct ToolCall: Identifiable, Sendable {
     public enum Kind: Sendable {
         case think, write, run, read
         case custom(BUIGlyph)
+        /// An SF Symbol, for hosts that already have an icon per tool.
+        case symbol(String)
 
         var glyph: BUIGlyph {
             switch self {
@@ -13,6 +15,7 @@ public struct ToolCall: Identifiable, Sendable {
             case .run: BUIGlyph("M4 17l6-5-6-5M12 19h8")
             case .read: BUIGlyph("M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6")
             case .custom(let glyph): glyph
+            case .symbol: .sparkle
             }
         }
     }
@@ -187,33 +190,9 @@ public struct ToolChips: View {
                     if rowOpen { openRows.remove(call.id) } else { openRows.insert(call.id) }
                 }
             } label: {
-                HStack(spacing: 8) {
-                    ZStack {
-                        BUIIcon(call.kind.glyph, size: 13)
-                            .opacity(rowOpen ? 0 : 1)
-                        BUIIcon(.chevronDown, size: 12, lineWidth: 2.2)
-                            .rotationEffect(.degrees(rowOpen ? 0 : -90))
-                            .opacity(rowOpen ? 1 : 0)
-                    }
-                    .frame(width: 16, height: 16)
-                    .foregroundStyle(theme.colors.ink3)
-                    Text(call.label)
-                        .buiFont(BUITextStyle(size: 12.5, weight: .medium))
-                        .foregroundStyle(theme.colors.ink)
-                        .lineLimit(1)
-                        .fixedSize()
-                    Text(call.chip)
-                        .buiFont(BUITextStyle(size: 11.5, design: call.monospacedChip ? .monospaced : .default))
-                        .foregroundStyle(theme.colors.ink2)
-                        .lineLimit(1)
-                        .truncationMode(.tail)
-                        .padding(.horizontal, 6)
-                        .frame(maxWidth: .infinity, minHeight: 22, maxHeight: 22, alignment: .leading)
-                        .background(theme.colors.field, in: .rect(cornerRadius: theme.radii.chip))
-                        .overlay(RoundedRectangle(cornerRadius: theme.radii.chip).strokeBorder(theme.colors.line, lineWidth: 1))
-                }
-                .padding(.horizontal, 3)
-                .frame(height: 28)
+                ToolChipLabel(call: call, isOpen: rowOpen)
+                    .padding(.horizontal, 3)
+                    .frame(height: 28 * theme.typeScale)
                 .contentShape(.rect(cornerRadius: theme.radii.control))
             }
             .buttonStyle(PressHighlightStyle(radius: theme.radii.control))
@@ -293,6 +272,115 @@ public struct ToolChips: View {
             Rectangle().fill(theme.colors.line).frame(height: 1)
         }
         .padding(.top, 10)
+    }
+}
+
+/// One tool call as a row of its own, for hosts that lay out each call as a separate list
+/// row (a lazy list) instead of a whole run in one `ToolChips`. `accessory` sits after the chip.
+/// How `ToolChipRow` draws the argument: `.boxed` is the original's field-colored chip; `.plain` keeps only its
+/// type, for long runs of rows where a box on every line gets busy.
+public enum ToolChipStyle: Sendable { case boxed, plain }
+
+public struct ToolChipRow<Accessory: View>: View {
+    var call: ToolCall
+    var isOpen: Bool
+    var isRunning: Bool
+    var chipStyle: ToolChipStyle
+    var action: () -> Void
+    var accessory: Accessory
+    @Environment(\.buiTheme) private var theme
+
+    public init(
+        _ call: ToolCall,
+        isOpen: Bool,
+        isRunning: Bool = false,
+        chipStyle: ToolChipStyle = .boxed,
+        action: @escaping () -> Void,
+        @ViewBuilder accessory: () -> Accessory
+    ) {
+        self.call = call
+        self.isOpen = isOpen
+        self.isRunning = isRunning
+        self.chipStyle = chipStyle
+        self.action = action
+        self.accessory = accessory()
+    }
+
+    public var body: some View {
+        Button(action: action) {
+            HStack(spacing: 8) {
+                ToolChipLabel(call: call, isOpen: isOpen, isRunning: isRunning, boxed: chipStyle == .boxed)
+                accessory
+            }
+            .frame(minHeight: 28 * theme.typeScale)
+            .contentShape(.rect(cornerRadius: theme.radii.control))
+        }
+        .buttonStyle(PressHighlightStyle(radius: theme.radii.control))
+        .accessibilityValue(isOpen ? "Expanded" : "Collapsed")
+    }
+}
+
+public extension ToolChipRow where Accessory == EmptyView {
+    init(_ call: ToolCall, isOpen: Bool, isRunning: Bool = false, chipStyle: ToolChipStyle = .boxed, action: @escaping () -> Void) {
+        self.init(call, isOpen: isOpen, isRunning: isRunning, chipStyle: chipStyle, action: action) { EmptyView() }
+    }
+}
+
+/// Icon (a chevron once open, a spinner while running), label and the argument chip.
+struct ToolChipLabel: View {
+    var call: ToolCall
+    var isOpen: Bool
+    var isRunning = false
+    var boxed = true
+    @Environment(\.buiTheme) private var theme
+
+    var body: some View {
+        HStack(spacing: 8) {
+            ZStack {
+                if isRunning {
+                    BUISpinner()
+                } else {
+                    kindIcon
+                        .opacity(isOpen ? 0 : 1)
+                    BUIIcon(.chevronDown, size: 12, lineWidth: 2.2)
+                        .rotationEffect(.degrees(isOpen ? 0 : -90))
+                        .opacity(isOpen ? 1 : 0)
+                }
+            }
+            .frame(width: 16, height: 16)
+            .foregroundStyle(theme.colors.ink3)
+            Text(call.label)
+                .buiFont(BUITextStyle(size: 12.5, weight: .medium))
+                .foregroundStyle(theme.colors.ink)
+                .lineLimit(1)
+                .fixedSize()
+            if boxed {
+                chip
+                    .padding(.horizontal, 6)
+                    .frame(maxWidth: .infinity, minHeight: 22 * theme.typeScale, maxHeight: 22 * theme.typeScale, alignment: .leading)
+                    .background(theme.colors.field, in: .rect(cornerRadius: theme.radii.chip))
+                    .overlay(RoundedRectangle(cornerRadius: theme.radii.chip).strokeBorder(theme.colors.line, lineWidth: 1))
+            } else {
+                chip
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+        }
+    }
+
+    private var chip: some View {
+        Text(call.chip)
+            .buiFont(BUITextStyle(size: 11.5, design: call.monospacedChip ? .monospaced : .default))
+            .foregroundStyle(theme.colors.ink2)
+            .lineLimit(1)
+            .truncationMode(.tail)
+    }
+
+    @ViewBuilder private var kindIcon: some View {
+        if case .symbol(let name) = call.kind {
+            Image(systemName: name).font(.system(size: 11, weight: .semibold))
+        } else {
+            BUIIcon(call.kind.glyph, size: 13)
+        }
     }
 }
 
