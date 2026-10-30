@@ -71,25 +71,39 @@ public extension BUITextStyle {
 
 struct BUIFontModifier: ViewModifier {
     let style: BUITextStyle
-    @ScaledMetric private var size: CGFloat
+    @ScaledMetric private var scaledSize: CGFloat
+    @Environment(\.buiTheme.typeScale) private var typeScale
 
     init(style: BUITextStyle) {
         self.style = style
-        _size = ScaledMetric(wrappedValue: style.size, relativeTo: style.textStyle)
+        _scaledSize = ScaledMetric(wrappedValue: style.size, relativeTo: style.textStyle)
     }
 
     /// SF's natural line height is about 1.19 × the point size.
     nonisolated static let naturalLineHeight: CGFloat = 1.19
 
     func body(content: Content) -> some View {
+        let size = scaledSize * typeScale
         // CSS spreads `line-height` as half-leading above and below every line;
         // SwiftUI only adds `lineSpacing` between lines, so pad the remainder.
         let leading = max(0, (style.lineHeight - Self.naturalLineHeight) * size)
         content
             .font(.system(size: size, weight: style.weight, design: style.design))
+            // A host's `.fontDesign` (for example an app-wide rounded design) overrides the font's own design: keep
+            // monospaced / rounded styles, and let `.default` ones follow the host.
+            .modifier(KeepDesign(design: style.design))
             .tracking(style.tracking * size)
             .lineSpacing(leading)
             .padding(.vertical, leading / 2)
+    }
+}
+
+/// `.fontDesign(nil)` would reset the host's design too, so `.default` adds nothing.
+private struct KeepDesign: ViewModifier {
+    let design: Font.Design
+
+    func body(content: Content) -> some View {
+        if design == .default { content } else { content.fontDesign(design) }
     }
 }
 

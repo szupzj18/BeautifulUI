@@ -18,9 +18,10 @@ struct EntranceModifier: ViewModifier {
     var anchor: UnitPoint
     @State private var shown = false
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.buiTheme.entrances) private var entrances
 
     func body(content: Content) -> some View {
-        let visible = shown || reduceMotion
+        let visible = shown || reduceMotion || !entrances
         content
             .opacity(visible ? 1 : 0)
             .offset(y: entrance == .fadeUp && !visible ? 8 : 0)
