@@ -6,6 +6,8 @@ import SwiftUI
 struct ShimmerModifier: ViewModifier {
     var active: Bool
     var duration: Double
+    var base: Color?
+    var highlight: Color?
     @Environment(\.buiTheme) private var theme
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var phase: CGFloat = 0
@@ -13,16 +15,16 @@ struct ShimmerModifier: ViewModifier {
     func body(content: Content) -> some View {
         if active && !reduceMotion {
             content
-                .foregroundStyle(theme.colors.ink3)
+                .foregroundStyle(base ?? theme.colors.ink3)
                 .overlay {
                     GeometryReader { proxy in
                         // background-size: 200%; background-position 150% → -50%
                         // moves the band's centre from -0.5w to 1.5w.
                         LinearGradient(
                             stops: [
-                                .init(color: theme.colors.ink.opacity(0), location: 0.35),
-                                .init(color: theme.colors.ink, location: 0.5),
-                                .init(color: theme.colors.ink.opacity(0), location: 0.65),
+                                .init(color: (highlight ?? theme.colors.ink).opacity(0), location: 0.35),
+                                .init(color: highlight ?? theme.colors.ink, location: 0.5),
+                                .init(color: (highlight ?? theme.colors.ink).opacity(0), location: 0.65),
                             ],
                             startPoint: .leading,
                             endPoint: .trailing
@@ -40,14 +42,14 @@ struct ShimmerModifier: ViewModifier {
                     }
                 }
         } else {
-            content.foregroundStyle(active ? theme.colors.ink2 : theme.colors.ink)
+            content.foregroundStyle(active ? (base ?? theme.colors.ink2) : theme.colors.ink)
         }
     }
 }
 
 public extension View {
-    /// Sweeps a highlight across the view's text while `active`.
-    func buiShimmer(_ active: Bool = true, duration: Double = 1.4) -> some View {
-        modifier(ShimmerModifier(active: active, duration: duration))
+    /// Sweeps a highlight across the view's text while `active` (default `ink-3` → `ink`).
+    func buiShimmer(_ active: Bool = true, duration: Double = 1.4, base: Color? = nil, highlight: Color? = nil) -> some View {
+        modifier(ShimmerModifier(active: active, duration: duration, base: base, highlight: highlight))
     }
 }

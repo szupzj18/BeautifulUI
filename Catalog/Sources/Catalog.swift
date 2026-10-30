@@ -104,7 +104,11 @@ enum Catalog {
             subtitle: "A line-numbered listing and a unified diff.",
             variants: CodeBlockDemo.variants, content: { AnyView(CodeBlockDemo(variant: $0)) }
         ),
-        CatalogEntry(id: "fine-tune-card", number: "19", title: "Fine-tune Card", subtitle: "The agent adjusts design properties in an inspector."),
+        CatalogEntry(
+            id: "fine-tune-card", number: "19", title: "Fine-tune Card",
+            subtitle: "The agent adjusts design properties in an inspector.",
+            content: { _ in AnyView(FineTuneCardDemo()) }
+        ),
         CatalogEntry(id: "selection-actions", number: "20", title: "Selection Actions", subtitle: "Highlight a passage and hand it to the agent to rewrite."),
         CatalogEntry(id: "agent-screen", number: "21", title: "Agent Screen", subtitle: "Watch an agent's screen — open, teach a task, record."),
     ]
