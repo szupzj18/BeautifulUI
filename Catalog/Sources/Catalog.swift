@@ -74,7 +74,11 @@ enum Catalog {
             subtitle: "CRM-style grid with tags, sorting, and relationship status.",
             content: { _ in AnyView(RecordsTableDemo()) }
         ),
-        CatalogEntry(id: "filter-table", number: "13", title: "Filter Table", subtitle: "Status chips that reorganize live data."),
+        CatalogEntry(
+            id: "filter-table", number: "13", title: "Filter Table",
+            subtitle: "Status chips that reorganize live data.",
+            content: { _ in AnyView(FilterTableDemo()) }
+        ),
         CatalogEntry(id: "sidebar-nav", number: "14", title: "Sidebar Nav", subtitle: "Collapsible workspace and chat navigation with gliding hover states."),
         CatalogEntry(id: "search", number: "15", title: "Search", subtitle: "Command search with live filtering and an empty state."),
         CatalogEntry(id: "flowchart", number: "16", title: "Flowchart", subtitle: "Workflow trigger and condition steps on a dotted canvas."),

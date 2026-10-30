@@ -60,3 +60,35 @@ public struct BUITagPill: View {
         .fixedSize()
     }
 }
+
+/// `.records-tag` / `.filter-status-*`: one base hue mixed into the surface for the fill and
+/// ring and into ink for the label — light mode 18–20 % / 32–34 %, dark mode 34 %.
+public struct BUIHueTag: View {
+    var label: String
+    var base: Color
+    var lightFill: Double
+    @Environment(\.buiTheme) private var theme
+    @Environment(\.colorScheme) private var scheme
+
+    public init(_ label: String, base: Color, lightFill: Double = 0.2) {
+        self.label = label
+        self.base = base
+        self.lightFill = lightFill
+    }
+
+    public var body: some View {
+        let dark = scheme == .dark
+        let fill = base.mix(with: theme.colors.surface, by: 1 - (dark ? 0.34 : lightFill))
+        let ring = base.mix(with: theme.colors.surface, by: dark ? 0.66 : 0.66)
+        let ink = dark ? base.mix(with: .white, by: 0.14) : base.mix(with: theme.colors.ink, by: 0.08)
+        Text(label)
+            .buiFont(BUITextStyle(size: 13, weight: .medium, lineHeight: 1.19))
+            .foregroundStyle(ink)
+            .lineLimit(1)
+            .padding(.horizontal, 7)
+            .frame(height: 23)
+            .background(fill, in: .rect(cornerRadius: 8, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: 8, style: .continuous).strokeBorder(ring, lineWidth: 1))
+            .fixedSize()
+    }
+}
