@@ -29,3 +29,25 @@ targets:
         SWIFT_VERSION: "6.0"
         TARGETED_DEVICE_FAMILY: "1,2"
         CODE_SIGN_STYLE: Automatic
+  CatalogUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - UITests
+    dependencies:
+      - target: Catalog
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.chrispan.BeautifulUICatalog.UITests
+        GENERATE_INFOPLIST_FILE: YES
+        SWIFT_VERSION: "6.0"
+        TEST_TARGET_NAME: Catalog
+schemes:
+  Catalog:
+    build:
+      targets:
+        Catalog: all
+        CatalogUITests: [test]
+    test:
+      targets:
+        - CatalogUITests

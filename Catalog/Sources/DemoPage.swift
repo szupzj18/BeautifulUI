@@ -6,6 +6,8 @@ struct DemoPage: View {
     let entry: CatalogEntry
     var initialVariant: String?
     var reportsFrame = false
+    /// Goes straight to the next component (handy for flipping through the catalog).
+    var onNext: (() -> Void)?
     @State private var replay = 0
 
     var body: some View {
@@ -19,6 +21,11 @@ struct DemoPage: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button("Replay", systemImage: "arrow.counterclockwise") { replay += 1 }
+            }
+            if let onNext {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Next component", systemImage: "chevron.forward", action: onNext)
+                }
             }
         }
     }

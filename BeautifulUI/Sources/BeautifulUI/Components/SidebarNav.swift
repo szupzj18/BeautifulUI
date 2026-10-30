@@ -258,6 +258,8 @@ public struct SidebarNav: View {
                 withAnimation(BUICurve.link.animation(duration: 0.18)) { searchOpen = true }
                 searchFocused = true
             }
+            // Closed, the control is one button; open, its field and close button stand alone.
+            .accessibilityElement(children: searchOpen ? .contain : .ignore)
             .accessibilityAddTraits(searchOpen ? [] : .isButton)
             .accessibilityLabel(searchOpen ? "" : "Search chats")
         }

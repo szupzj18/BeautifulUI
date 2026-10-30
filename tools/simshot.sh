@@ -23,8 +23,20 @@ ARGS=(-component $COMPONENT -theme $THEME -shot YES)
 [[ -n $STATE ]] && ARGS+=(-state $STATE)
 xcrun simctl launch $UDID $BUNDLE $ARGS >/dev/null
 sleep $WAIT
+# The page reports its surface frame once laid out; wait for one that lies on screen (402 × 874).
+for attempt in 1 2 3 4 5 6 7 8 9 10; do
+  FRAME_LINE=$(python3 -I -c 'import json,sys
+try:
+    f=json.load(open(sys.argv[1]))
+except Exception:
+    sys.exit(1)
+ok = f["x"] >= 0 and f["y"] >= 0 and f["x"] + f["width"] <= 402.5 and f["y"] + f["height"] <= 874.5
+print(f["x"], f["y"], f["width"], f["height"]) if ok else sys.exit(1)' $FRAME) && break
+  sleep 0.5
+done
+[[ -n $FRAME_LINE ]] || { echo "no on-screen surface frame for $COMPONENT $VARIANT $THEME" >&2; exit 1; }
 xcrun simctl io $UDID screenshot --type=png $RAW >/dev/null 2>&1
-read X Y W H < <(python3 -I -c 'import json,sys; f=json.load(open(sys.argv[1])); print(f["x"], f["y"], f["width"], f["height"])' $FRAME)
+read X Y W H <<< "$FRAME_LINE"
 H=$(( H + ${EXTRA:-0} ))
 $ROOT/verify/bin/compose crop $RAW $X $Y $W $H 3 $OUT
 echo "$OUT"

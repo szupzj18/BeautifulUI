@@ -73,7 +73,7 @@ struct RootView: View {
             }
             .navigationDestination(for: String.self) { id in
                 if let entry = Catalog.entry(id) {
-                    DemoPage(entry: entry, initialVariant: launch.variant, reportsFrame: launch.shot)
+                    DemoPage(entry: entry, initialVariant: launch.variant, reportsFrame: launch.shot, onNext: next(after: id))
                 }
             }
         }
@@ -83,6 +83,16 @@ struct RootView: View {
 extension EnvironmentValues {
     /// The `-state` launch argument; demos use it to start in an interaction state.
     @Entry var demoState: String?
+}
+
+extension RootView {
+    /// Replaces the current page with the next ported component, if there is one.
+    func next(after id: String) -> (() -> Void)? {
+        let ported = Catalog.entries.filter { $0.content != nil }
+        guard let index = ported.firstIndex(where: { $0.id == id }), index + 1 < ported.count else { return nil }
+        let nextID = ported[index + 1].id
+        return { path = [nextID] }
+    }
 }
 
 enum CatalogLayout: String {
