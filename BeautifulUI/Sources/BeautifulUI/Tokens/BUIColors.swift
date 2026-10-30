@@ -96,7 +96,10 @@ public extension BUIColors {
     )
 }
 
-public extension Color {
+/// Internal on purpose: host apps tend to define the same initialisers,
+/// and exporting these would make their calls ambiguous. Hosts build `BUIColors` from their
+/// own colours instead.
+extension Color {
     /// A color that resolves to `light` or `dark` with the current appearance.
     init(light: UInt32, dark: UInt32, lightAlpha: Double = 1, darkAlpha: Double = 1) {
         #if canImport(UIKit)
