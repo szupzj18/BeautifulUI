@@ -2,7 +2,13 @@
 # Generate, build and install the Catalog on this project's own simulator.
 set -e
 ROOT=${0:A:h:h}  # the repository root; this script lives in tools/
+# A simulator of this project's own, created on first use.
+if [[ ! -s $ROOT/verify/sim-udid.txt ]]; then
+  mkdir -p $ROOT/verify
+  xcrun simctl create "BeautifulUI Catalog" com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro >| $ROOT/verify/sim-udid.txt
+fi
 UDID=$(cat $ROOT/verify/sim-udid.txt)
+xcrun simctl boot $UDID 2>/dev/null || true
 cd $ROOT/Catalog
 xcodegen generate --quiet
 LOG=$ROOT/verify/build-catalog.log

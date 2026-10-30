@@ -1,12 +1,20 @@
+# Build products
 .DS_Store
 .build/
 .swiftpm/
 DerivedData/
 xcuserdata/
 *.xcodeproj
+
+# Local only, never published
+# reference/: beautifului.dev screenshots, page dumps and source extracts (someone else's site)
+reference/
+# demo/: walkthrough video and the self-contained demo page (too large for GitHub)
+demo/
+# demo-site/: a copy of demo/ made outside this task; same content, same reason
+demo-site/
+# verify/: simulator shots, logs, DerivedData, backups
 verify/
-reference/raw/
-reference/source/_rsc_payload.txt
 TASK.md
-reference/tools/shoot-config.json
-reference/tools/timeline-config.json
+# full-size comparison sheets; the repository keeps the JPEGs
+compare/*.png

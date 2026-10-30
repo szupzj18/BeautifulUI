@@ -1,5 +1,5 @@
 #!/bin/zsh
-# Build compare/<NN>-<id>.png for one component: one row per variant/state, columns
+# Build compare/<NN>-<id>.jpg for one component: one row per variant/state, columns
 # web dark | iOS dark | web light | iOS light.
 #
 #   tools/compare.sh <NN> <component-id> <title> <row>...
@@ -7,6 +7,7 @@
 set -e
 ROOT=${0:A:h:h}  # the repository root; this script lives in tools/
 N=$1 ID=$2 TITLE=$3
+[[ -x $ROOT/verify/bin/compose ]] || { mkdir -p $ROOT/verify/bin; swiftc -O $ROOT/tools/compose.swift -o $ROOT/verify/bin/compose; }
 shift 3
 IMAGES=() LABELS=()
 for row in $@; do
@@ -21,6 +22,10 @@ for row in $@; do
     IMAGES+=($WEB $IOS)
   done
 done
-$ROOT/verify/bin/compose grid "$N $TITLE — beautifului.dev vs BeautifulUI" $ROOT/compare/$N-$ID.png \
+# Full-size PNG stays local in verify/; the repository keeps a 1600 px JPEG.
+mkdir -p $ROOT/verify/compare-png
+PNG=$ROOT/verify/compare-png/$N-$ID.png
+$ROOT/verify/bin/compose grid "$N $TITLE — beautifului.dev vs BeautifulUI" $PNG \
   "web · dark|SwiftUI · dark|web · light|SwiftUI · light" "${(j:|:)LABELS}" $IMAGES
-echo $ROOT/compare/$N-$ID.png
+sips -s format jpeg -s formatOptions 72 --resampleWidth 1600 $PNG --out $ROOT/compare/$N-$ID.jpg >/dev/null
+echo $ROOT/compare/$N-$ID.jpg
