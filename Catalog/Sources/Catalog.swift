@@ -114,7 +114,11 @@ enum Catalog {
             subtitle: "Highlight a passage and hand it to the agent to rewrite.",
             content: { _ in AnyView(SelectionActionsDemo()) }
         ),
-        CatalogEntry(id: "agent-screen", number: "21", title: "Agent Screen", subtitle: "Watch an agent's screen — open, teach a task, record."),
+        CatalogEntry(
+            id: "agent-screen", number: "21", title: "Agent Screen",
+            subtitle: "Watch an agent's screen — open, teach a task, record.",
+            variants: AgentScreenDemo.variants, content: { AnyView(AgentScreenDemo(variant: $0)) }
+        ),
     ]
 
     static var portedCount: Int { entries.filter { $0.content != nil }.count }
