@@ -109,7 +109,11 @@ enum Catalog {
             subtitle: "The agent adjusts design properties in an inspector.",
             content: { _ in AnyView(FineTuneCardDemo()) }
         ),
-        CatalogEntry(id: "selection-actions", number: "20", title: "Selection Actions", subtitle: "Highlight a passage and hand it to the agent to rewrite."),
+        CatalogEntry(
+            id: "selection-actions", number: "20", title: "Selection Actions",
+            subtitle: "Highlight a passage and hand it to the agent to rewrite.",
+            content: { _ in AnyView(SelectionActionsDemo()) }
+        ),
         CatalogEntry(id: "agent-screen", number: "21", title: "Agent Screen", subtitle: "Watch an agent's screen — open, teach a task, record."),
     ]
 
