@@ -54,7 +54,11 @@ enum Catalog {
             subtitle: "Composer with @ sources, / commands, model picker, and dictation.",
             variants: PromptBarDemo.variants, content: { AnyView(PromptBarDemo(variant: $0)) }
         ),
-        CatalogEntry(id: "recommendation-card", number: "09", title: "Recommendation Card", subtitle: "Agent suggestion with a confidence meter and actions."),
+        CatalogEntry(
+            id: "recommendation-card", number: "09", title: "Recommendation Card",
+            subtitle: "Agent suggestion with a confidence meter and actions.",
+            content: { _ in AnyView(RecommendationCardDemo()) }
+        ),
         CatalogEntry(
             id: "context-cards", number: "10", title: "Context Cards",
             subtitle: "Retrieved knowledge chunks with their sources.",
