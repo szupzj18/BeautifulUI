@@ -55,7 +55,11 @@ enum Catalog {
             variants: PromptBarDemo.variants, content: { AnyView(PromptBarDemo(variant: $0)) }
         ),
         CatalogEntry(id: "recommendation-card", number: "09", title: "Recommendation Card", subtitle: "Agent suggestion with a confidence meter and actions."),
-        CatalogEntry(id: "context-cards", number: "10", title: "Context Cards", subtitle: "Retrieved knowledge chunks with their sources."),
+        CatalogEntry(
+            id: "context-cards", number: "10", title: "Context Cards",
+            subtitle: "Retrieved knowledge chunks with their sources.",
+            content: { _ in AnyView(ContextCardsDemo()) }
+        ),
         CatalogEntry(id: "diff-table", number: "11", title: "Diff Table", subtitle: "AI-proposed edits sweeping through tabular data."),
         CatalogEntry(id: "records-table", number: "12", title: "Records Table", subtitle: "CRM-style grid with tags, sorting, and relationship status."),
         CatalogEntry(id: "filter-table", number: "13", title: "Filter Table", subtitle: "Status chips that reorganize live data."),
