@@ -4,6 +4,7 @@
 #
 #   tools/simshot.sh <component-id> <variant|-> <dark|light> <wait-seconds> <out.png> [state]
 #
+# EXTRA=<pt> in the environment extends the crop below the surface (for overflowing popovers).
 # Expects the app already built into verify/DerivedData (see tools/build-catalog.sh).
 set -e
 ROOT=${0:A:h:h}  # the repository root; this script lives in tools/
@@ -24,5 +25,6 @@ xcrun simctl launch $UDID $BUNDLE $ARGS >/dev/null
 sleep $WAIT
 xcrun simctl io $UDID screenshot --type=png $RAW >/dev/null 2>&1
 read X Y W H < <(python3 -I -c 'import json,sys; f=json.load(open(sys.argv[1])); print(f["x"], f["y"], f["width"], f["height"])' $FRAME)
+H=$(( H + ${EXTRA:-0} ))
 $ROOT/verify/bin/compose crop $RAW $X $Y $W $H 3 $OUT
 echo "$OUT"

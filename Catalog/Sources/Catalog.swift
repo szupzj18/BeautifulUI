@@ -30,7 +30,11 @@ enum Catalog {
             content: { _ in AnyView(StreamingTextDemo()) }
         ),
         CatalogEntry(id: "approval-card", number: "04", title: "Approval Card", subtitle: "Human-in-the-loop questions the agent asks before acting."),
-        CatalogEntry(id: "tool-chips", number: "05", title: "Tool Chips", subtitle: "Code edits and tool calls as compact chips."),
+        CatalogEntry(
+            id: "tool-chips", number: "05", title: "Tool Chips",
+            subtitle: "Code edits and tool calls as compact chips.",
+            content: { _ in AnyView(ToolChipsDemo()) }
+        ),
         CatalogEntry(id: "task-rows", number: "06", title: "Task Rows", subtitle: "Live agent task status — running, failed, completed."),
         CatalogEntry(id: "chat-composer", number: "07", title: "Chat", subtitle: "Tabbed chat panel with reasoning replies and a composer."),
         CatalogEntry(id: "prompt-bar", number: "08", title: "Prompt Bar", subtitle: "Composer with @ sources, / commands, model picker, and dictation."),

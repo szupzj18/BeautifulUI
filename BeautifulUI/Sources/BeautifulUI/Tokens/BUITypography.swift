@@ -11,7 +11,8 @@ public struct BUITextStyle: Sendable, Hashable {
     public var design: Font.Design
     /// CSS `line-height` as a multiple of the font size; only affects multi-line text.
     public var lineHeight: CGFloat
-    /// Letter spacing in em (the site sets `-0.01em` on body text).
+    /// Letter spacing in em. The site sets `-0.01em` on body text; mono text defaults to
+    /// `-0.03em` because SF Mono's advance (0.618 em) is wider than JetBrains Mono's (0.6 em).
     public var tracking: CGFloat
     public var textStyle: Font.TextStyle
 
@@ -27,7 +28,7 @@ public struct BUITextStyle: Sendable, Hashable {
         self.weight = weight
         self.design = design
         self.lineHeight = lineHeight
-        self.tracking = tracking ?? (design == .monospaced ? 0 : -0.01)
+        self.tracking = tracking ?? (design == .monospaced ? -0.03 : -0.01)
         self.textStyle = textStyle ?? Self.textStyle(for: size)
     }
 
