@@ -35,7 +35,11 @@ enum Catalog {
             subtitle: "Code edits and tool calls as compact chips.",
             content: { _ in AnyView(ToolChipsDemo()) }
         ),
-        CatalogEntry(id: "task-rows", number: "06", title: "Task Rows", subtitle: "Live agent task status — running, failed, completed."),
+        CatalogEntry(
+            id: "task-rows", number: "06", title: "Task Rows",
+            subtitle: "Live agent task status — running, failed, completed.",
+            variants: TaskRowsDemo.variants, content: { AnyView(TaskRowsDemo(variant: $0)) }
+        ),
         CatalogEntry(id: "chat-composer", number: "07", title: "Chat", subtitle: "Tabbed chat panel with reasoning replies and a composer."),
         CatalogEntry(id: "prompt-bar", number: "08", title: "Prompt Bar", subtitle: "Composer with @ sources, / commands, model picker, and dictation."),
         CatalogEntry(id: "recommendation-card", number: "09", title: "Recommendation Card", subtitle: "Agent suggestion with a confidence meter and actions."),
