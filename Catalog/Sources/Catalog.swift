@@ -69,7 +69,11 @@ enum Catalog {
             subtitle: "AI-proposed edits sweeping through tabular data.",
             content: { _ in AnyView(DiffTableDemo()) }
         ),
-        CatalogEntry(id: "records-table", number: "12", title: "Records Table", subtitle: "CRM-style grid with tags, sorting, and relationship status."),
+        CatalogEntry(
+            id: "records-table", number: "12", title: "Records Table",
+            subtitle: "CRM-style grid with tags, sorting, and relationship status.",
+            content: { _ in AnyView(RecordsTableDemo()) }
+        ),
         CatalogEntry(id: "filter-table", number: "13", title: "Filter Table", subtitle: "Status chips that reorganize live data."),
         CatalogEntry(id: "sidebar-nav", number: "14", title: "Sidebar Nav", subtitle: "Collapsible workspace and chat navigation with gliding hover states."),
         CatalogEntry(id: "search", number: "15", title: "Search", subtitle: "Command search with live filtering and an empty state."),
