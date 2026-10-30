@@ -63,7 +63,11 @@ enum Catalog {
         CatalogEntry(id: "search", number: "15", title: "Search", subtitle: "Command search with live filtering and an empty state."),
         CatalogEntry(id: "flowchart", number: "16", title: "Flowchart", subtitle: "Workflow trigger and condition steps on a dotted canvas."),
         CatalogEntry(id: "insight-cards", number: "17", title: "Insight Cards", subtitle: "Paged agent insights with scrub-ready live charts."),
-        CatalogEntry(id: "code-block", number: "18", title: "Code Block", subtitle: "A line-numbered listing and a unified diff."),
+        CatalogEntry(
+            id: "code-block", number: "18", title: "Code Block",
+            subtitle: "A line-numbered listing and a unified diff.",
+            variants: CodeBlockDemo.variants, content: { AnyView(CodeBlockDemo(variant: $0)) }
+        ),
         CatalogEntry(id: "fine-tune-card", number: "19", title: "Fine-tune Card", subtitle: "The agent adjusts design properties in an inspector."),
         CatalogEntry(id: "selection-actions", number: "20", title: "Selection Actions", subtitle: "Highlight a passage and hand it to the agent to rewrite."),
         CatalogEntry(id: "agent-screen", number: "21", title: "Agent Screen", subtitle: "Watch an agent's screen — open, teach a task, record."),
