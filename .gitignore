@@ -1,0 +1,10 @@
+.DS_Store
+.build/
+.swiftpm/
+DerivedData/
+xcuserdata/
+*.xcodeproj
+verify/
+reference/raw/
+reference/source/_rsc_payload.txt
+TASK.md
