@@ -11,9 +11,9 @@ shift 3
 IMAGES=() LABELS=()
 for row in $@; do
   IFS=: read WV WS IV WAIT ISTATE IEXTRA <<< "$row"
-  LABELS+=("${WV} · ${WS}")
+  LABELS+=("${WV} · ${WS}${ISTATE:+ · iOS state $ISTATE}")
   for theme in dark light; do
-    IOS=$ROOT/verify/ios/$N-$ID-$WV-$WS-$theme.png
+    IOS=$ROOT/verify/ios/$N-$ID-$WV-$WS${ISTATE:+-$ISTATE}-$theme.png
     EXTRA=${IEXTRA:-0} $ROOT/tools/simshot.sh $ID $IV $theme $WAIT $IOS $ISTATE >/dev/null
     # Anything but mid/end comes from shoot-timeline.mjs (fresh page load per capture).
     if [[ $WS != mid && $WS != end ]]; then WEB=$ROOT/reference/shots/timeline-$theme/$N-$ID-$WV-$WS.png

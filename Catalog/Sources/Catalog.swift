@@ -44,7 +44,11 @@ enum Catalog {
             subtitle: "Live agent task status — running, failed, completed.",
             variants: TaskRowsDemo.variants, content: { AnyView(TaskRowsDemo(variant: $0)) }
         ),
-        CatalogEntry(id: "chat-composer", number: "07", title: "Chat", subtitle: "Tabbed chat panel with reasoning replies and a composer."),
+        CatalogEntry(
+            id: "chat-composer", number: "07", title: "Chat",
+            subtitle: "Tabbed chat panel with reasoning replies and a composer.",
+            content: { _ in AnyView(ChatDemo()) }
+        ),
         CatalogEntry(
             id: "prompt-bar", number: "08", title: "Prompt Bar",
             subtitle: "Composer with @ sources, / commands, model picker, and dictation.",
