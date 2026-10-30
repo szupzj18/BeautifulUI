@@ -94,7 +94,11 @@ enum Catalog {
             subtitle: "Workflow trigger and condition steps on a dotted canvas.",
             content: { _ in AnyView(FlowchartDemo()) }
         ),
-        CatalogEntry(id: "insight-cards", number: "17", title: "Insight Cards", subtitle: "Paged agent insights with scrub-ready live charts."),
+        CatalogEntry(
+            id: "insight-cards", number: "17", title: "Insight Cards",
+            subtitle: "Paged agent insights with scrub-ready live charts.",
+            content: { _ in AnyView(InsightCardsDemo()) }
+        ),
         CatalogEntry(
             id: "code-block", number: "18", title: "Code Block",
             subtitle: "A line-numbered listing and a unified diff.",

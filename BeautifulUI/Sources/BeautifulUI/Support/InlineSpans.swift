@@ -12,6 +12,10 @@ public enum BUIInlineSpan: Sendable {
     case entity(String, monogram: String, tint: Color)
     /// A value in a tinted pill.
     case value(String, tone: Tone = .neutral)
+    /// `@name` after a coloured dot, in medium ink.
+    case mention(String, dot: Color)
+    /// A figure in the mono face, tinted (e.g. a red loss).
+    case code(String, tone: Tone)
 }
 
 struct InlinePillAttribute: TextAttribute {
@@ -46,6 +50,11 @@ struct InlineSpanText {
                 let name = Text(name).font(.system(size: 12, weight: .medium)).foregroundStyle(colors.ink)
                 piece = Text("\(gap(2 + 3 + 16 + 4))\(name)\(gap(6 + 2))")
                     .customAttribute(InlinePillAttribute(kind: .entity(index)))
+            case .mention(let name, let dot):
+                let mark = Text("\u{25CF}").font(.system(size: 10)).foregroundStyle(dot)
+                piece = Text("\(mark)\u{2009}\(Text("@\(name)").fontWeight(.medium).foregroundStyle(colors.ink))")
+            case .code(let s, let tone):
+                piece = Text(s).font(.system(size: 11.5, design: .monospaced)).foregroundStyle(Self.ink(tone, colors))
             case .value(let value, let tone):
                 let label = Text(value).font(.system(size: 12, weight: .medium)).foregroundStyle(Self.ink(tone, colors))
                 piece = Text("\(gap(2 + 6))\(label)\(gap(6 + 2))")
