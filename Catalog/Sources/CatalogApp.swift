@@ -96,7 +96,7 @@ struct GalleryView: View {
                     .foregroundStyle(theme.colors.ink3)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.horizontal, 16)
+            .padding(.horizontal, 20)
             .padding(.top, 8)
 
             // Lazy, so demos scrolled off screen stop animating.
@@ -116,7 +116,7 @@ struct GalleryView: View {
                     }
                 }
             }
-            .padding(16)
+            .padding(20)
         }
         .background(StripedBackground().ignoresSafeArea())
     }

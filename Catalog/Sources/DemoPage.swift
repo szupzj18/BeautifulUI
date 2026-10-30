@@ -11,7 +11,7 @@ struct DemoPage: View {
     var body: some View {
         ScrollView {
             DemoSection(entry: entry, initialVariant: initialVariant, replay: replay, reportsFrame: reportsFrame)
-                .padding(16)
+                .padding(20)
         }
         .background(StripedBackground().ignoresSafeArea())
         .navigationTitle(entry.title)
