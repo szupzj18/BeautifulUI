@@ -26,6 +26,18 @@ public enum BUIAvatar: Sendable {
         }
     }
 
+    /// A non-square mark (brand logos); drawings get the exact size, others fill it.
+    @ViewBuilder
+    func view(width: CGFloat, height: CGFloat) -> some View {
+        switch self {
+        case .drawing(let draw):
+            Canvas { gc, size in draw(&gc, size) }
+                .frame(width: width, height: height)
+        default:
+            view(size: max(width, height)).frame(width: width, height: height).clipped()
+        }
+    }
+
     func draw(in gc: GraphicsContext, rect: CGRect, radius: CGFloat) {
         var gc = gc
         gc.clip(to: Path(roundedRect: rect, cornerRadius: radius))

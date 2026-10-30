@@ -45,7 +45,11 @@ enum Catalog {
             variants: TaskRowsDemo.variants, content: { AnyView(TaskRowsDemo(variant: $0)) }
         ),
         CatalogEntry(id: "chat-composer", number: "07", title: "Chat", subtitle: "Tabbed chat panel with reasoning replies and a composer."),
-        CatalogEntry(id: "prompt-bar", number: "08", title: "Prompt Bar", subtitle: "Composer with @ sources, / commands, model picker, and dictation."),
+        CatalogEntry(
+            id: "prompt-bar", number: "08", title: "Prompt Bar",
+            subtitle: "Composer with @ sources, / commands, model picker, and dictation.",
+            variants: PromptBarDemo.variants, content: { AnyView(PromptBarDemo(variant: $0)) }
+        ),
         CatalogEntry(id: "recommendation-card", number: "09", title: "Recommendation Card", subtitle: "Agent suggestion with a confidence meter and actions."),
         CatalogEntry(id: "context-cards", number: "10", title: "Context Cards", subtitle: "Retrieved knowledge chunks with their sources."),
         CatalogEntry(id: "diff-table", number: "11", title: "Diff Table", subtitle: "AI-proposed edits sweeping through tabular data."),
