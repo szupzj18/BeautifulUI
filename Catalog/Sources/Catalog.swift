@@ -29,7 +29,11 @@ enum Catalog {
             subtitle: "Streamed answer with inline sources, actions, and follow-ups.",
             content: { _ in AnyView(StreamingTextDemo()) }
         ),
-        CatalogEntry(id: "approval-card", number: "04", title: "Approval Card", subtitle: "Human-in-the-loop questions the agent asks before acting."),
+        CatalogEntry(
+            id: "approval-card", number: "04", title: "Approval Card",
+            subtitle: "Human-in-the-loop questions the agent asks before acting.",
+            content: { _ in AnyView(ApprovalCardDemo()) }
+        ),
         CatalogEntry(
             id: "tool-chips", number: "05", title: "Tool Chips",
             subtitle: "Code edits and tool calls as compact chips.",
