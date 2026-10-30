@@ -2,14 +2,14 @@
 # Launch the Catalog on this project's own simulator at one component/variant/theme,
 # screenshot it and crop to the demo surface.
 #
-#   tools/simshot.sh <component-id> <variant|-> <dark|light> <wait-seconds> <out.png>
+#   tools/simshot.sh <component-id> <variant|-> <dark|light> <wait-seconds> <out.png> [state]
 #
 # Expects the app already built into verify/DerivedData (see tools/build-catalog.sh).
 set -e
 ROOT=${0:A:h:h}  # the repository root; this script lives in tools/
 UDID=$(cat $ROOT/verify/sim-udid.txt)
 BUNDLE=com.chrispan.BeautifulUICatalog
-COMPONENT=$1 VARIANT=$2 THEME=$3 WAIT=$4 OUT=$5
+COMPONENT=$1 VARIANT=$2 THEME=$3 WAIT=$4 OUT=$5 STATE=${6:-}
 RAW=$ROOT/verify/sim-raw/${COMPONENT}-${VARIANT}-${THEME}.png
 mkdir -p $ROOT/verify/sim-raw
 
@@ -19,6 +19,7 @@ FRAME=$DATA/Documents/surface-frame.json
 xcrun simctl terminate $UDID $BUNDLE >/dev/null 2>&1 || true
 ARGS=(-component $COMPONENT -theme $THEME -shot YES)
 [[ $VARIANT != - ]] && ARGS+=(-variant $VARIANT)
+[[ -n $STATE ]] && ARGS+=(-state $STATE)
 xcrun simctl launch $UDID $BUNDLE $ARGS >/dev/null
 sleep $WAIT
 xcrun simctl io $UDID screenshot --type=png $RAW >/dev/null 2>&1

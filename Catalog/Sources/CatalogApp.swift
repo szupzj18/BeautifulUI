@@ -9,6 +9,7 @@ struct CatalogApp: App {
         WindowGroup {
             RootView(launch: launch)
                 .preferredColorScheme(launch.colorScheme)
+                .environment(\.demoState, launch.state)
         }
     }
 }
@@ -19,6 +20,8 @@ struct LaunchOptions {
     var component: String?
     var variant: String?
     var colorScheme: ColorScheme?
+    /// An interaction state for demos to open in (e.g. `sources`), since simctl can't tap.
+    var state: String?
     /// Writes the demo surface's frame to `Documents/surface-frame.json` so a script can crop screenshots.
     var shot: Bool
 
@@ -33,6 +36,7 @@ struct LaunchOptions {
             component: defaults.string(forKey: "component"),
             variant: defaults.string(forKey: "variant"),
             colorScheme: scheme,
+            state: defaults.string(forKey: "state"),
             shot: defaults.bool(forKey: "shot")
         )
     }()
@@ -74,6 +78,11 @@ struct RootView: View {
             }
         }
     }
+}
+
+extension EnvironmentValues {
+    /// The `-state` launch argument; demos use it to start in an interaction state.
+    @Entry var demoState: String?
 }
 
 enum CatalogLayout: String {

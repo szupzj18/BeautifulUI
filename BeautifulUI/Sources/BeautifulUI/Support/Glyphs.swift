@@ -1,105 +1,52 @@
 import SwiftUI
 
-/// The small line icons the site draws inline as 24×24 SVGs, redrawn as paths so their
-/// weight and proportions match the original instead of the nearest SF Symbol.
-public enum BUIGlyph: Sendable, Hashable {
-    case sparkle
-    case chevronDown
-    case chevronRight
-    case check
-    case magnifier
-    case globe
-    case close
-    case plus
-    case arrowUp
-    case arrowRight
-    case copy
-    case refresh
-    case thumbUp
-    case thumbDown
-
+/// The small line icons the original draws inline as 24×24 SVGs, kept as their SVG path data
+/// so weight and proportions match instead of the nearest SF Symbol.
+public struct BUIGlyph: Sendable, Hashable {
+    /// SVG path data in a 24×24 box.
+    public var d: String
     /// Filled glyphs ignore the line width.
-    var filled: Bool { self == .sparkle }
+    public var filled: Bool
 
-    func path(in unit: CGFloat) -> Path {
-        var p = Path()
-        func pt(_ x: CGFloat, _ y: CGFloat) -> CGPoint { CGPoint(x: x * unit, y: y * unit) }
-        func circle(_ cx: CGFloat, _ cy: CGFloat, _ r: CGFloat) {
-            p.addEllipse(in: CGRect(x: (cx - r) * unit, y: (cy - r) * unit, width: 2 * r * unit, height: 2 * r * unit))
-        }
-        func line(_ points: (CGFloat, CGFloat)...) {
-            guard let first = points.first else { return }
-            p.move(to: pt(first.0, first.1))
-            for point in points.dropFirst() { p.addLine(to: pt(point.0, point.1)) }
-        }
-        switch self {
-        case .sparkle:
-            // M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z
-            line((12, 2), (14.4, 9.2), (22, 12), (14.4, 14.8), (12, 22), (9.6, 14.8), (2, 12), (9.6, 9.2))
-            p.closeSubpath()
-        case .chevronDown:
-            line((6, 9), (12, 15), (18, 9))
-        case .chevronRight:
-            line((9, 6), (15, 12), (9, 18))
-        case .check:
-            line((20, 6), (9, 17), (4, 12))
-        case .magnifier:
-            circle(11, 11, 7)
-            line((21, 21), (16.7, 16.7))
-        case .globe:
-            circle(12, 12, 9)
-            line((3.5, 12), (20.5, 12))
-            p.move(to: pt(12, 3))
-            p.addQuadCurve(to: pt(12, 21), control: pt(19, 12))
-            p.move(to: pt(12, 3))
-            p.addQuadCurve(to: pt(12, 21), control: pt(5, 12))
-        case .close:
-            line((18, 6), (6, 18))
-            line((6, 6), (18, 18))
-        case .plus:
-            line((12, 5), (12, 19))
-            line((5, 12), (19, 12))
-        case .arrowUp:
-            line((12, 19), (12, 5))
-            line((5, 12), (12, 5), (19, 12))
-        case .arrowRight:
-            line((5, 12), (19, 12))
-            line((13, 6), (19, 12), (13, 18))
-        case .copy:
-            p.addRoundedRect(in: CGRect(x: 9 * unit, y: 9 * unit, width: 13 * unit, height: 13 * unit), cornerSize: CGSize(width: 2 * unit, height: 2 * unit))
-            p.move(to: pt(5, 15))
-            p.addLine(to: pt(4, 15))
-            p.addQuadCurve(to: pt(2, 13), control: pt(2, 15))
-            p.addLine(to: pt(2, 4))
-            p.addQuadCurve(to: pt(4, 2), control: pt(2, 2))
-            p.addLine(to: pt(13, 2))
-            p.addQuadCurve(to: pt(15, 4), control: pt(15, 2))
-            p.addLine(to: pt(15, 5))
-        case .refresh:
-            p.addArc(center: pt(12, 12), radius: 8 * unit, startAngle: .degrees(-60), endAngle: .degrees(250), clockwise: false)
-            line((16, 3.5), (16.2, 5.2), (14.5, 6.8))
-        case .thumbUp:
-            line((7, 10), (7, 20))
-            p.move(to: pt(7, 10))
-            p.addLine(to: pt(11, 3))
-            p.addQuadCurve(to: pt(14, 6), control: pt(14, 3))
-            p.addLine(to: pt(13.5, 9))
-            p.addLine(to: pt(19, 9))
-            p.addQuadCurve(to: pt(21, 11.5), control: pt(21.3, 9.3))
-            p.addLine(to: pt(19.5, 18.5))
-            p.addQuadCurve(to: pt(17, 20), control: pt(19, 20))
-            p.addLine(to: pt(4, 20))
-            p.addLine(to: pt(4, 10))
-            p.closeSubpath()
-        case .thumbDown:
-            return BUIGlyph.thumbUp.path(in: unit)
-                .applying(CGAffineTransform(a: 1, b: 0, c: 0, d: -1, tx: 0, ty: 24 * unit))
-        }
-        return p
+    public init(_ d: String, filled: Bool = false) {
+        self.d = d
+        self.filled = filled
+    }
+
+    /// `<circle>` as path data.
+    public static func circle(_ cx: Double, _ cy: Double, _ r: Double) -> String {
+        "M\(cx - r) \(cy)a\(r) \(r) 0 1 0 \(2 * r) 0a\(r) \(r) 0 1 0 \(-2 * r) 0"
+    }
+
+    /// `<rect>` as path data.
+    public static func rect(_ x: Double, _ y: Double, _ w: Double, _ h: Double, rx: Double = 0) -> String {
+        guard rx > 0 else { return "M\(x) \(y)h\(w)v\(h)h\(-w)z" }
+        return "M\(x + rx) \(y)h\(w - 2 * rx)a\(rx) \(rx) 0 0 1 \(rx) \(rx)v\(h - 2 * rx)a\(rx) \(rx) 0 0 1 \(-rx) \(rx)"
+            + "h\(-(w - 2 * rx))a\(rx) \(rx) 0 0 1 \(-rx) \(-rx)v\(-(h - 2 * rx))a\(rx) \(rx) 0 0 1 \(rx) \(-rx)z"
     }
 }
 
-/// Draws a `BUIGlyph` at `size` points with the original's SVG stroke width.
+public extension BUIGlyph {
+    static let sparkle = BUIGlyph("M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z", filled: true)
+    static let chevronDown = BUIGlyph("M6 9l6 6 6-6")
+    static let chevronRight = BUIGlyph("M9 6l6 6-6 6")
+    static let check = BUIGlyph("M20 6L9 17l-5-5")
+    static let magnifier = BUIGlyph(circle(11, 11, 7) + "M21 21l-4.3-4.3")
+    static let globe = BUIGlyph(circle(12, 12, 9) + "M3.5 12h17M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18")
+    static let close = BUIGlyph("M18 6L6 18M6 6l12 12")
+    static let plus = BUIGlyph("M12 5v14M5 12h14")
+    static let arrowUp = BUIGlyph("M12 19V5M5 12l7-7 7 7")
+    static let arrowRight = BUIGlyph("M5 12h14M13 6l6 6-6 6")
+    static let copy = BUIGlyph(rect(9, 9, 12, 12, rx: 2.5) + "M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1")
+    static let retry = BUIGlyph("M21 12a9 9 0 1 1-2.64-6.36M21 3v6h-6")
+    static let thumbUp = BUIGlyph("M7 10v12M15 5.88L14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88z")
+    static let thumbDown = BUIGlyph("M17 14V2M9 18.12L10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88z")
+    /// Corner-down-left, used on follow-up prompts.
+    static let reply = BUIGlyph("M9 10l-5 5 5 5M20 4v7a4 4 0 0 1-4 4H4")
+}
+
+/// Draws a `BUIGlyph` (or any 24-box SVG path data) at `size` points with the original's
+/// stroke width.
 public struct BUIIcon: View {
     var glyph: BUIGlyph
     var size: CGFloat
@@ -114,10 +61,10 @@ public struct BUIIcon: View {
 
     public var body: some View {
         let unit = size / 24
-        let path = glyph.path(in: unit)
+        let path = SVGPath.path(glyph.d).applying(CGAffineTransform(scaleX: unit, y: unit))
         Group {
             if glyph.filled {
-                path.fill(style: FillStyle())
+                path.fill()
             } else {
                 path.stroke(style: StrokeStyle(lineWidth: lineWidth * unit, lineCap: .round, lineJoin: .round))
             }

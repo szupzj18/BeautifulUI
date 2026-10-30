@@ -24,7 +24,11 @@ enum Catalog {
             subtitle: "Expandable traces — steps, reasoning, search, coding.",
             variants: ThinkingDemo.variants, content: { AnyView(ThinkingDemo(variant: $0)) }
         ),
-        CatalogEntry(id: "streaming-text", number: "03", title: "Streaming Text", subtitle: "Streamed answer with inline sources, actions, and follow-ups."),
+        CatalogEntry(
+            id: "streaming-text", number: "03", title: "Streaming Text",
+            subtitle: "Streamed answer with inline sources, actions, and follow-ups.",
+            content: { _ in AnyView(StreamingTextDemo()) }
+        ),
         CatalogEntry(id: "approval-card", number: "04", title: "Approval Card", subtitle: "Human-in-the-loop questions the agent asks before acting."),
         CatalogEntry(id: "tool-chips", number: "05", title: "Tool Chips", subtitle: "Code edits and tool calls as compact chips."),
         CatalogEntry(id: "task-rows", number: "06", title: "Task Rows", subtitle: "Live agent task status — running, failed, completed."),
