@@ -89,7 +89,11 @@ enum Catalog {
             subtitle: "Command search with live filtering and an empty state.",
             content: { _ in AnyView(SearchDemo()) }
         ),
-        CatalogEntry(id: "flowchart", number: "16", title: "Flowchart", subtitle: "Workflow trigger and condition steps on a dotted canvas."),
+        CatalogEntry(
+            id: "flowchart", number: "16", title: "Flowchart",
+            subtitle: "Workflow trigger and condition steps on a dotted canvas.",
+            content: { _ in AnyView(FlowchartDemo()) }
+        ),
         CatalogEntry(id: "insight-cards", number: "17", title: "Insight Cards", subtitle: "Paged agent insights with scrub-ready live charts."),
         CatalogEntry(
             id: "code-block", number: "18", title: "Code Block",
