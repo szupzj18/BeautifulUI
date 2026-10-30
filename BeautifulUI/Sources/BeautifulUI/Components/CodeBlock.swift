@@ -90,6 +90,10 @@ public struct CodeBlock: View {
     var copyLabel: String
     var copiedLabel: String
     var onCopy: ((String) -> Void)?
+    var counts: (additions: Int, deletions: Int)?
+    var maxWidth: CGFloat = 420
+    var elevation: BUIElevation = .card
+    var onTitleTap: (() -> Void)?
 
     @State private var copied = false
     @Environment(\.buiTheme) private var theme
@@ -106,55 +110,76 @@ public struct CodeBlock: View {
     }
 
     /// A unified diff with +/- counts in the header.
-    public init(filename: String, diff: [DiffRow]) {
+    /// - Parameters:
+    ///   - additions / deletions: the header's counts when `diff` is only an excerpt of the change.
+    ///   - elevation: `.hairline` drops the shadows (a block inside another card).
+    ///   - onTitleTap: makes the file name a button (open the file).
+    public init(
+        filename: String,
+        diff: [DiffRow],
+        additions: Int? = nil,
+        deletions: Int? = nil,
+        maxWidth: CGFloat = 420,
+        elevation: BUIElevation = .card,
+        onTitleTap: (() -> Void)? = nil
+    ) {
         self.filename = filename
         self.content = .diff(diff)
         self.copyText = nil
         self.copyLabel = "Copy"
         self.copiedLabel = "Copied"
         self.onCopy = nil
+        if let additions, let deletions { self.counts = (additions, deletions) }
+        self.maxWidth = maxWidth
+        self.elevation = elevation
+        self.onTitleTap = onTitleTap
+    }
+
+    /// Diffs without line numbers (an edit's old and new text) drop the number column and its rule.
+    private var numbered: Bool {
+        if case .diff(let rows) = content { return rows.contains { $0.oldNumber != nil || $0.newNumber != nil } }
+        return true
     }
 
     public var body: some View {
+        let numbered = numbered
         VStack(spacing: 0) {
             header
             VStack(spacing: 0) {
                 switch content {
                 case .code(let lines):
                     ForEach(Array(lines.enumerated()), id: \.offset) { index, line in
-                        row(number: index + 1, kind: .context, pieces: [DiffRow.Piece(line)])
+                        row(number: index + 1, kind: .context, pieces: [DiffRow.Piece(line)], numbered: true)
                     }
                 case .diff(let rows):
                     ForEach(Array(rows.enumerated()), id: \.offset) { _, r in
-                        row(number: r.kind == .removed ? r.oldNumber : r.newNumber, kind: r.kind, pieces: r.pieces)
+                        row(number: r.kind == .removed ? r.oldNumber : r.newNumber, kind: r.kind, pieces: r.pieces, numbered: numbered)
                     }
                 }
             }
             .background(alignment: .leading) {
-                Rectangle().fill(theme.colors.line).frame(width: 1).offset(x: 20)
+                if numbered { Rectangle().fill(theme.colors.line).frame(width: 1).offset(x: 20) }
             }
             .padding(.vertical, 12)
         }
-        .frame(maxWidth: 420)
-        .buiSurface(radius: theme.radii.card, elevation: .card)
+        .frame(maxWidth: maxWidth)
+        .buiSurface(radius: theme.radii.card, elevation: elevation)
     }
 
     private var header: some View {
         HStack(spacing: 8) {
-            HStack(spacing: 7) {
-                BUIIcon(BUIGlyph("M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5"), size: 15, lineWidth: 1.8)
-                    .foregroundStyle(theme.colors.ink3)
-                Text(filename)
-                    .buiFont(BUITextStyle(size: 12.5, design: .monospaced, lineHeight: 1))
-                    .foregroundStyle(theme.colors.ink)
-                    .lineLimit(1)
+            if let onTitleTap {
+                Button(action: onTitleTap) { title.contentShape(.rect) }
+                    .buttonStyle(.plain)
+            } else {
+                title
             }
             Spacer(minLength: 8)
             switch content {
             case .diff(let rows):
                 HStack(spacing: 8) {
-                    Text("+\(rows.filter { $0.kind == .added }.count)").foregroundStyle(theme.colors.green)
-                    Text("-\(rows.filter { $0.kind == .removed }.count)").foregroundStyle(theme.colors.red)
+                    Text("+\(counts?.additions ?? rows.filter { $0.kind == .added }.count)").foregroundStyle(theme.colors.green)
+                    Text("-\(counts?.deletions ?? rows.filter { $0.kind == .removed }.count)").foregroundStyle(theme.colors.red)
                 }
                 .buiFont(BUITextStyle(size: 12, design: .monospaced, lineHeight: 1))
                 .monospacedDigit()
@@ -176,19 +201,33 @@ public struct CodeBlock: View {
             }
         }
         .padding(.horizontal, 16)
-        .frame(height: 44)
+        .frame(height: 44 * theme.typeScale)
         .overlay(alignment: .bottom) {
             Rectangle().fill(theme.colors.line).frame(height: 1)
         }
     }
 
-    private func row(number: Int?, kind: DiffRow.Kind, pieces: [DiffRow.Piece]) -> some View {
+    private var title: some View {
+        HStack(spacing: 7) {
+            BUIIcon(BUIGlyph("M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5"), size: 15, lineWidth: 1.8)
+                .foregroundStyle(theme.colors.ink3)
+            Text(filename)
+                .buiFont(BUITextStyle(size: 12.5, design: .monospaced, lineHeight: 1))
+                .foregroundStyle(theme.colors.ink)
+                .lineLimit(1)
+                .truncationMode(.head)
+        }
+    }
+
+    private func row(number: Int?, kind: DiffRow.Kind, pieces: [DiffRow.Piece], numbered: Bool) -> some View {
         let tone: Color? = kind == .added ? theme.colors.green : kind == .removed ? theme.colors.red : nil
         return HStack(alignment: .firstTextBaseline, spacing: 0) {
-            Text(number.map(String.init) ?? "")
-                .buiFont(BUITextStyle(size: 11, design: .monospaced, lineHeight: 12.5 * 1.65 / 11))
-                .foregroundStyle(tone ?? theme.colors.ink3)
-                .frame(width: 20)
+            if numbered {
+                Text(number.map(String.init) ?? "")
+                    .buiFont(BUITextStyle(size: 11, design: .monospaced, lineHeight: 12.5 * 1.65 / 11))
+                    .foregroundStyle(tone ?? theme.colors.ink3)
+                    .frame(width: 20)
+            }
             highlighted(pieces)
                 .buiFont(BUITextStyle(size: 12.5, design: .monospaced, lineHeight: 1.65))
                 .foregroundStyle(theme.colors.ink2)
@@ -197,7 +236,7 @@ public struct CodeBlock: View {
                     removed: Color(theme.colors.red.opacity(0.18).resolve(in: environment))
                 ))
                 .fixedSize(horizontal: false, vertical: true)
-                .padding(.leading, 4)
+                .padding(.leading, numbered ? 4 : 12)
                 .padding(.trailing, 12)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
