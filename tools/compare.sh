@@ -3,7 +3,7 @@
 # web dark | iOS dark | web light | iOS light.
 #
 #   tools/compare.sh <NN> <component-id> <title> <row>...
-#   row = <web-variant-slug>:<web-state mid|end>:<ios-variant|->:<ios-wait-seconds>
+#   row = <web-variant-slug>:<web-state mid|end|t<ms>>:<ios-variant|->:<ios-wait-seconds>
 set -e
 ROOT=${0:A:h:h}  # the repository root; this script lives in tools/
 N=$1 ID=$2 TITLE=$3
@@ -15,7 +15,10 @@ for row in $@; do
   for theme in dark light; do
     IOS=$ROOT/verify/ios/$N-$ID-$WV-$WS-$theme.png
     $ROOT/tools/simshot.sh $ID $IV $theme $WAIT $IOS >/dev/null
-    IMAGES+=($ROOT/reference/shots/phone-$theme/$N-$ID-$WV-$WS.png $IOS)
+    # t<ms> states come from shoot-timeline.mjs (fresh page load per capture).
+    if [[ $WS == t* ]]; then WEB=$ROOT/reference/shots/timeline-$theme/$N-$ID-$WV-$WS.png
+    else WEB=$ROOT/reference/shots/phone-$theme/$N-$ID-$WV-$WS.png; fi
+    IMAGES+=($WEB $IOS)
   done
 done
 $ROOT/verify/bin/compose grid "$N $TITLE — beautifului.dev vs BeautifulUI" $ROOT/compare/$N-$ID.png \

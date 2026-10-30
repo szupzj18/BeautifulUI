@@ -77,11 +77,18 @@ struct BUIFontModifier: ViewModifier {
         _size = ScaledMetric(wrappedValue: style.size, relativeTo: style.textStyle)
     }
 
+    /// SF's natural line height is about 1.19 × the point size.
+    nonisolated static let naturalLineHeight: CGFloat = 1.19
+
     func body(content: Content) -> some View {
+        // CSS spreads `line-height` as half-leading above and below every line;
+        // SwiftUI only adds `lineSpacing` between lines, so pad the remainder.
+        let leading = max(0, (style.lineHeight - Self.naturalLineHeight) * size)
         content
             .font(.system(size: size, weight: style.weight, design: style.design))
             .tracking(style.tracking * size)
-            .lineSpacing(max(0, (style.lineHeight - 1.2) * size))
+            .lineSpacing(leading)
+            .padding(.vertical, leading / 2)
     }
 }
 
