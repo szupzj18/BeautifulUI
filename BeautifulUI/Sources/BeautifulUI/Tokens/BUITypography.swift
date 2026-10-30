@@ -89,7 +89,7 @@ struct BUIFontModifier: ViewModifier {
         let leading = max(0, (style.lineHeight - Self.naturalLineHeight) * size)
         content
             .font(.system(size: size, weight: style.weight, design: style.design))
-            // A host's `.fontDesign` (for example an app-wide rounded design) overrides the font's own design: keep
+            // A host's `.fontDesign` (an app may set one for its whole tree) overrides the font's own design: keep
             // monospaced / rounded styles, and let `.default` ones follow the host.
             .modifier(KeepDesign(design: style.design))
             .tracking(style.tracking * size)
