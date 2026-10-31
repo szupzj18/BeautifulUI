@@ -1,10 +1,29 @@
-# Build products
+# macOS
 .DS_Store
+
+# Swift Package Manager
 .build/
 .swiftpm/
+/Packages
+Package.resolved
+.netrc
+
+# Xcode
 DerivedData/
 xcuserdata/
+*.xcuserstate
 *.xcodeproj
+*.xcworkspace
+*.xcresult
+*.moved-aside
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Editors
+.idea/
+.vscode/
 
 # Local only, never published
 # reference/: beautifului.dev screenshots, page dumps and source extracts (someone else's site)
