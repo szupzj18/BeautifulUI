@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  package:
+    name: Build and test the package
+    # The package needs the macOS 26 SDK (Swift 6.2). Use macos-latest once it points at macOS 26.
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+      - name: Toolchain
+        run: |
+          xcodebuild -version
+          swift --version
+      - name: Build
+        run: swift build
+      - name: Test
+        run: swift test
+      - name: Build the package manifest in BeautifulUI/ (used by local-path dependencies)
+        run: swift build --package-path BeautifulUI
+
+  catalog:
+    name: Build the Catalog app
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Generate the project
+        run: xcodegen generate
+        working-directory: Catalog
+      - name: Build for the simulator
+        working-directory: Catalog
+        run: |
+          xcodebuild build \
+            -project Catalog.xcodeproj \
+            -scheme Catalog \
+            -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO
