@@ -28,7 +28,7 @@ release is tagged, this section becomes `0.1.0`.
 - A Catalog demo app, generated with XcodeGen: a gallery of live demos in the original's order, a list
   view, single-component pages, launch arguments for screenshots, and a scripted UI-test walkthrough.
 - 58 unit tests.
-- Side-by-side comparison sheets with the original site in `compare/`, and the scripts that build them in `tools/`.
+- Per-component sheets of every state in dark and light in `compare/`, and the scripts that build them in `tools/`.
 - MIT license for this code, the original project's MIT license (`LICENSE-beautifului`) and a `NOTICE`.
 - A root `Package.swift`, so the repository can be added to a project by URL.
 - README, `docs/`, contributing guide, code of conduct, security policy, issue and pull request

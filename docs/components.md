@@ -1,8 +1,8 @@
 # Components
 
 The 21 components of [Beautiful UI](https://www.beautifului.dev/), in the order of the original site.
-Each one links to a comparison sheet: one row per state, four columns (original dark, SwiftUI dark,
-original light, SwiftUI light). "Original" is the original page at 402 pt wide (iPhone 17 Pro).
+Each one links to a sheet of its states: one row per state, two columns (SwiftUI dark, SwiftUI light),
+captured from the Catalog on an iPhone 17 Pro.
 
 Components are data-driven and carry no demo data. The ice-cream sample data lives in the
 [Catalog](../README.md#run-the-catalog) app only.

@@ -1,8 +1,9 @@
 #!/bin/zsh
-# Regenerate every compare/NN-*.png from the current build (row specs as in tools/compare.sh).
+# Regenerate every compare/NN-*.jpg from the current build (row specs as in tools/compare.sh).
+# COMPOSE_ONLY=1 re-lays out the sheets from the screenshots already in verify/ios/.
 set -e
 T=${0:A:h}  # this tools/ directory
-$T/build-catalog.sh
+[[ -n $COMPOSE_ONLY ]] || $T/build-catalog.sh
 $T/compare.sh 01 loading-state "Loading State" drive:end:Drive:3 dots:end:Dots:3 orbit:end:Orbit:3 surfer:end:Surfer:3
 $T/compare.sh 02 thinking-state "Thinking" steps:t2200:Steps:2.4 steps:t4800:Steps:5.0 reasoning:t4800:Reasoning:5.0 search:t4800:Search:5.0 coding:t4800:Coding:5.0 steps:end:Steps:9
 $T/compare.sh 03 streaming-text "Streaming Text" default:t1000:-:1.2 default:done:-:3.4 default:sources:-:3.6:sources

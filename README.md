@@ -11,11 +11,11 @@ SwiftUI interface primitives for AI-native apps: a port of [Beautiful UI](https:
 
 - No third-party dependencies. Components are data-driven and carry no demo data; the ice-cream sample data lives in the Catalog only.
 - Light and dark appearance follow the system. Text scales with Dynamic Type. With "Reduce Motion" on, looping animations stop.
-- Every component has a side-by-side sheet with the original site in [`compare/`](compare).
+- Every component has a sheet of its states in dark and light in [`compare/`](compare).
 
 ## Components
 
-Tap a screenshot for its comparison with the original. Differences from the original are listed in [docs/components.md](docs/components.md).
+Tap a screenshot for every state of the component, in dark and light. Differences from the original are listed in [docs/components.md](docs/components.md).
 
 <table>
 <tr><td width="33%" valign="top" align="center"><a href="compare/01-loading-state.jpg"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/components/dark/01-loading-state.jpg"><img src="docs/images/components/light/01-loading-state.jpg" width="220" alt="Loading State"></picture></a><br><b>01 Loading State</b><br><sub>Pixel-grid loader with shimmer and elapsed time.</sub></td><td width="33%" valign="top" align="center"><a href="compare/02-thinking-state.jpg"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/components/dark/02-thinking-state.jpg"><img src="docs/images/components/light/02-thinking-state.jpg" width="220" alt="Thinking"></picture></a><br><b>02 Thinking</b><br><sub>Expandable traces: steps, reasoning, search, coding.</sub></td><td width="33%" valign="top" align="center"><a href="compare/03-streaming-text.jpg"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/components/dark/03-streaming-text.jpg"><img src="docs/images/components/light/03-streaming-text.jpg" width="220" alt="Streaming Text"></picture></a><br><b>03 Streaming Text</b><br><sub>Streamed answer with inline sources, actions and follow-ups.</sub></td></tr>
@@ -132,13 +132,13 @@ Pick the `Catalog` scheme and an iPhone simulator, then run.
 - Each component page looks like a section of the original site: numbered title, a canvas-colored demo area and variant buttons at the bottom. Replay and next-component buttons sit top right.
 - Launch arguments, for screenshots and recordings: `-component <id> -variant <name> -theme dark|light -state <state>`. For example `-component approval-card -state q2` opens the second question of the approval card.
 - `Catalog/UITests/WalkthroughTests` is a scripted walkthrough (all 21 components in dark, three more in light). `tools/record-walkthrough.sh` records the screen while it runs.
-- `tools/build-catalog.sh` generates, builds and installs the Catalog on a simulator of its own. `tools/compare-all.sh` regenerates every comparison sheet from the current code; the original site's screenshots are not in the repository (they are someone else's content), so a fresh clone can only re-shoot the SwiftUI side.
+- `tools/build-catalog.sh` generates, builds and installs the Catalog on a simulator of its own. `tools/compare-all.sh` regenerates every sheet in `compare/` from the current code.
 
 Run the unit tests with `swift test` (58 tests: curves and keyframes, SVG parsing, per-component state logic).
 
 ## Relationship to Beautiful UI
 
-BeautifulUI is a SwiftUI port of [Beautiful UI](https://www.beautifului.dev/), a set of AI-native interface primitives by Turbo. The design tokens, component behavior, copy and demo data are derived from the original, which is Copyright (c) 2026 Shane Levine and released under the MIT License ([`LICENSE-beautifului`](LICENSE-beautifului), [`NOTICE`](NOTICE)). The left-hand columns of the comparison sheets in [`compare/`](compare) are screenshots of the original showcase site.
+BeautifulUI is a SwiftUI port of [Beautiful UI](https://www.beautifului.dev/), a set of AI-native interface primitives by Turbo. The design tokens, component behavior, copy and demo data are derived from the original, which is Copyright (c) 2026 Shane Levine and released under the MIT License ([`LICENSE-beautifului`](LICENSE-beautifului), [`NOTICE`](NOTICE)). The repository contains no screenshots of the original site.
 
 ## Contributing
 

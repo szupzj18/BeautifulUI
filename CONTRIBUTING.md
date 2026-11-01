@@ -21,7 +21,7 @@ released under the [MIT license](LICENSE) of this repository.
 | `BeautifulUI/Package.swift` | The same package for hosts that depend on a local checkout |
 | `Catalog/` | The demo app (`project.yml` is the XcodeGen spec) and its UI tests |
 | `docs/` | Documentation and design tokens |
-| `compare/`, `tools/` | Side-by-side comparison sheets and the scripts that build them |
+| `compare/`, `tools/` | Per-component state sheets (dark and light) and the scripts that build them |
 
 The two `Package.swift` files must declare the same platforms, products and targets. If you change
 one, change the other.
