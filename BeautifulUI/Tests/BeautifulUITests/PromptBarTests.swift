@@ -10,7 +10,7 @@ import Testing
 
     @Test func ignoresTriggersInsideWordsOrFinishedTokens() {
         #expect(PromptToken.parse("mail@home") == nil)
-        #expect(PromptToken.parse("@Slack ") == nil)
+        #expect(PromptToken.parse("@Docs ") == nil)
         #expect(PromptToken.parse("a/b") == nil)
         #expect(PromptToken.parse("") == nil)
     }
