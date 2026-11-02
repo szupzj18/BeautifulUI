@@ -1,7 +1,7 @@
 import BeautifulUI
 import SwiftUI
 
-/// The original's self-running walkthrough: the @ menu, connecting Gmail, the / menu, then
+/// The original's self-running walkthrough: the @ menu, connecting Mail, the / menu, then
 /// upgrading the model (which fires the rainbow sweep). `-state stepN` holds on step N.
 struct PromptBarDemo: View {
     static let variants = ["Rounded", "Pill"]
@@ -37,9 +37,9 @@ struct PromptBarDemo: View {
         PromptSource(id: "scoop", name: "Scoop Data", detail: "Sales & churn metrics", icon: .glyph(BUIGlyph("M4 20V10M10 20V4M16 20v-7M22 20H2"))),
         PromptSource(id: "flavors", name: "Flavor records", detail: "26 makers, tags, links", icon: .glyph(BUIGlyph("M12 2 2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"))),
         PromptSource(id: "web", name: "Web search", detail: "Real-time news and info", icon: .glyph(BUIGlyph(BUIGlyph.circle(12, 12, 10) + "M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"))),
-        PromptSource(id: "figma", name: "Figma", detail: "Design-to-code workflows", icon: .mark(BrandMarks.figma, size: CGSize(width: 11, height: 16))),
-        PromptSource(id: "slack", name: "Slack", detail: "Read and manage Slack", icon: .mark(BrandMarks.slack, size: CGSize(width: 15, height: 15))),
-        PromptSource(id: "gmail", name: "Gmail", detail: "Read and manage Gmail", icon: .mark(BrandMarks.gmail, size: CGSize(width: 15, height: 12)), kind: .connectable),
+        PromptSource(id: "docs", name: "Docs", detail: "Drafts and shared notes", icon: .glyph(BUIGlyph("M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7zM14 2v4a2 2 0 0 0 2 2h4M10 9H8M16 13H8M16 17H8"))),
+        PromptSource(id: "chat", name: "Chat", detail: "Read and manage Chat", icon: .glyph(BUIGlyph("M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"))),
+        PromptSource(id: "mail", name: "Mail", detail: "Read and manage Mail", icon: .glyph(BUIGlyph("M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zM22 7l-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7")), kind: .connectable),
     ]
 
     static let commands = [
@@ -96,7 +96,7 @@ struct PromptBarDemo: View {
         withAnimation(BUICurve.outStrong.animation(duration: 0.18)) {
             model.text = step.draft
             if let connect = step.connect {
-                if connect { model.connectedSourceIDs.insert("gmail") } else { model.connectedSourceIDs.remove("gmail") }
+                if connect { model.connectedSourceIDs.insert("mail") } else { model.connectedSourceIDs.remove("mail") }
             }
             if let open = step.modelOpen { model.isModelMenuOpen = open }
             if let id = step.model {
@@ -105,39 +105,4 @@ struct PromptBarDemo: View {
             }
         }
     }
-}
-
-/// Figma, Slack and Gmail marks from the original's inline SVGs.
-enum BrandMarks {
-    static func mark(viewBox: CGSize, _ paths: [(String, UInt32)]) -> BUIAvatar {
-        .drawing { gc, size in
-            let k = min(size.width / viewBox.width, size.height / viewBox.height)
-            gc.translateBy(x: (size.width - viewBox.width * k) / 2, y: (size.height - viewBox.height * k) / 2)
-            gc.scaleBy(x: k, y: k)
-            for (d, color) in paths { gc.fill(SVGPath.path(d), with: .color(Color(hex: color))) }
-        }
-    }
-
-    static let figma = mark(viewBox: CGSize(width: 38, height: 57), [
-        ("M9.5 57A9.5 9.5 0 0 0 19 47.5V38H9.5a9.5 9.5 0 0 0 0 19z", 0x0ACF83),
-        ("M0 28.5A9.5 9.5 0 0 1 9.5 19H19v19H9.5A9.5 9.5 0 0 1 0 28.5z", 0xA259FF),
-        ("M0 9.5A9.5 9.5 0 0 1 9.5 0H19v19H9.5A9.5 9.5 0 0 1 0 9.5z", 0xF24E1E),
-        ("M19 0h9.5a9.5 9.5 0 1 1 0 19H19V0z", 0xFF7262),
-        ("M38 28.5a9.5 9.5 0 1 1-19 0 9.5 9.5 0 0 1 19 0z", 0x1ABCFE),
-    ])
-
-    static let slack = mark(viewBox: CGSize(width: 127, height: 127), [
-        ("M27.2 80c0 7.3-5.9 13.2-13.2 13.2C6.7 93.2.8 87.3.8 80c0-7.3 5.9-13.2 13.2-13.2h13.2V80zm6.6 0c0-7.3 5.9-13.2 13.2-13.2 7.3 0 13.2 5.9 13.2 13.2v33c0 7.3-5.9 13.2-13.2 13.2-7.3 0-13.2-5.9-13.2-13.2V80z", 0xE01E5A),
-        ("M47 27.2c-7.3 0-13.2-5.9-13.2-13.2C33.8 6.7 39.7.8 47 .8c7.3 0 13.2 5.9 13.2 13.2v13.2H47zm0 6.7c7.3 0 13.2 5.9 13.2 13.2 0 7.3-5.9 13.2-13.2 13.2H13.9C6.6 60.3.7 54.4.7 47.1c0-7.3 5.9-13.2 13.2-13.2H47z", 0x36C5F0),
-        ("M99.9 47.1c0-7.3 5.9-13.2 13.2-13.2 7.3 0 13.2 5.9 13.2 13.2 0 7.3-5.9 13.2-13.2 13.2H99.9V47.1zm-6.6 0c0 7.3-5.9 13.2-13.2 13.2-7.3 0-13.2-5.9-13.2-13.2V13.9C66.9 6.6 72.8.7 80.1.7c7.3 0 13.2 5.9 13.2 13.2v33.2z", 0x2EB67D),
-        ("M80.1 99.8c7.3 0 13.2 5.9 13.2 13.2 0 7.3-5.9 13.2-13.2 13.2-7.3 0-13.2-5.9-13.2-13.2V99.8h13.2zm0-6.6c-7.3 0-13.2-5.9-13.2-13.2 0-7.3 5.9-13.2 13.2-13.2h33.1c7.3 0 13.2 5.9 13.2 13.2 0 7.3-5.9 13.2-13.2 13.2H80.1z", 0xECB22E),
-    ])
-
-    static let gmail = mark(viewBox: CGSize(width: 256, height: 193), [
-        ("M58.182 192.05V93.14L27.507 65.077 0 49.504v125.091c0 9.658 7.825 17.455 17.455 17.455h40.727Z", 0x4285F4),
-        ("M197.818 192.05h40.727c9.659 0 17.455-7.826 17.455-17.455V49.505l-31.156 17.837-27.026 25.798v98.91Z", 0x34A853),
-        ("m58.182 93.14-4.174-38.647 4.174-36.989L128 69.868l69.818-52.364 4.669 34.992-4.669 40.644L128 145.504 58.182 93.14Z", 0xEA4335),
-        ("M197.818 17.504V93.14L256 49.504V26.231c0-21.585-24.64-33.89-41.89-20.945l-16.292 12.218Z", 0xFBBC04),
-        ("m0 49.504 26.759 20.07L58.182 93.14V17.504L41.89 5.286C24.61-7.66 0 4.646 0 26.23v23.273Z", 0xC5221F),
-    ])
 }
